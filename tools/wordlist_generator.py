@@ -21,7 +21,7 @@ class Cupp(HackingTool):
         panel = Panel(
             f"[bold purple]{self.TITLE}[/bold purple]\n\n"
             f"[cyan]{self.DESCRIPTION}[/cyan]\n\n"
-            f"[green]Repository:[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
+            f"[green]项目仓库：[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
             border_style="purple",
             box=box.ROUNDED,
         )
@@ -42,7 +42,7 @@ class WlCreator(HackingTool):
         panel = Panel(
             f"[bold purple]{self.TITLE}[/bold purple]\n\n"
             f"[cyan]{self.DESCRIPTION}[/cyan]\n\n"
-            f"[green]Repository:[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
+            f"[green]项目仓库：[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
             border_style="purple",
             box=box.ROUNDED,
         )
@@ -61,7 +61,7 @@ class GoblinWordGenerator(HackingTool):
         panel = Panel(
             f"[bold purple]{self.TITLE}[/bold purple]\n\n"
             f"[cyan]{self.DESCRIPTION}[/cyan]\n\n"
-            f"[green]Repository:[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
+            f"[green]项目仓库：[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
             border_style="purple",
             box=box.ROUNDED,
         )
@@ -86,7 +86,7 @@ class showme(HackingTool):
         panel = Panel(
             f"[bold purple]{self.TITLE}[/bold purple]\n\n"
             f"[cyan]{self.DESCRIPTION}[/cyan]\n\n"
-            f"[green]Repository:[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
+            f"[green]项目仓库：[/green] [underline blue]{self.PROJECT_URL}[/underline blue]",
             border_style="purple",
             box=box.ROUNDED,
         )
@@ -146,15 +146,15 @@ class WordlistGeneratorTools(HackingToolsCollection):
                        border_style="purple", box=box.DOUBLE)
         console.print(header)
         table = Table(box=box.SIMPLE, show_header=True, header_style="bold purple")
-        table.add_column("#", justify="center", style="cyan", width=4)
-        table.add_column("Tool", style="bold")
-        table.add_column("Description", style="dim", overflow="fold")
+        table.add_column("编号", justify="center", style="cyan", width=4)
+        table.add_column("工具", style="bold")
+        table.add_column("说明", style="dim", overflow="fold")
 
         for idx, t in enumerate(self.TOOLS, start=1):
             desc = getattr(t, "DESCRIPTION", "") or ""
             table.add_row(str(idx), t.TITLE, desc)
 
-        table.add_row("[red]99[/red]", "[bold red]Exit[/bold red]", "Return to previous menu")
+        table.add_row("[red]99[/red]", "[bold red]返回[/bold red]", "回到上一级菜单")
         console.print(table)
 
 if __name__ == "__main__":

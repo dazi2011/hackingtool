@@ -16,6 +16,7 @@ import socket
 import datetime
 import random
 import webbrowser
+import getpass
 from itertools import zip_longest
 
 from rich.console import Console
@@ -31,6 +32,7 @@ from rich.columns import Columns
 from core import HackingToolsCollection, clear_screen, console
 from constants import VERSION_DISPLAY, REPO_WEB_URL
 from config import get_tools_dir
+from localization import localize_tool_tree, original_text
 from tools.anonsurf import AnonSurfTools
 from tools.ddos import DDOSTools
 from tools.exploit_frameworks import ExploitFrameworkTools
@@ -59,27 +61,27 @@ from tools.mobile_security import MobileSecurityTools
 # menu_label is the concise name shown in the 2-column main menu grid.
 # full_title is shown when entering the category.
 tool_definitions = [
-    ("Anonymously Hiding Tools",           "🛡 ", "Anonymously Hiding"),
-    ("Information gathering tools",        "🔍",  "Information Gathering"),
-    ("Wordlist Generator",                 "📚",  "Wordlist Generator"),
-    ("Wireless attack tools",              "📶",  "Wireless Attack"),
-    ("SQL Injection Tools",                "🧩",  "SQL Injection"),
-    ("Phishing attack tools",              "🎣",  "Phishing Attack"),
-    ("Web Attack tools",                   "🌐",  "Web Attack"),
-    ("Post exploitation tools",            "🔧",  "Post Exploitation"),
-    ("Forensic tools",                     "🕵 ", "Forensics"),
-    ("Payload creation tools",             "📦",  "Payload Creation"),
-    ("Exploit framework",                  "🧰",  "Exploit Framework"),
-    ("Reverse engineering tools",          "🔁",  "Reverse Engineering"),
-    ("DDOS Attack Tools",                  "⚡",  "DDOS Attack"),
-    ("Remote Administrator Tools (RAT)",   "🖥 ", "Remote Admin (RAT)"),
-    ("XSS Attack Tools",                   "💥",  "XSS Attack"),
-    ("Steganography tools",                "🖼 ", "Steganography"),
-    ("Active Directory Tools",             "🏢",  "Active Directory"),
-    ("Cloud Security Tools",               "☁ ",  "Cloud Security"),
-    ("Mobile Security Tools",              "📱",  "Mobile Security"),
-    ("Other tools",                        "✨",  "Other Tools"),
-    ("Update or Uninstall | Hackingtool",  "♻ ",  "Update / Uninstall"),
+    ("匿名隐藏工具",             "", "匿名隐藏"),
+    ("信息收集工具",             "", "信息收集"),
+    ("字典生成工具",             "", "字典生成"),
+    ("无线攻击工具",             "", "无线攻击"),
+    ("SQL 注入工具",            "", "SQL 注入"),
+    ("钓鱼攻击工具",             "", "钓鱼攻击"),
+    ("Web 攻击工具",            "", "Web 攻击"),
+    ("后渗透工具",               "", "后渗透"),
+    ("取证工具",                 "", "取证分析"),
+    ("载荷生成工具",             "", "载荷生成"),
+    ("利用框架",                 "", "利用框架"),
+    ("逆向工程工具",             "", "逆向工程"),
+    ("DDoS 攻击工具",           "", "DDoS 攻击"),
+    ("远程管理工具（RAT）",      "", "远程管理"),
+    ("XSS 攻击工具",            "", "XSS 攻击"),
+    ("隐写工具",                 "", "隐写分析"),
+    ("活动目录工具",             "", "活动目录"),
+    ("云安全工具",               "", "云安全"),
+    ("移动安全工具",             "", "移动安全"),
+    ("其他工具",                 "", "其他工具"),
+    ("更新或卸载 | Hackingtool", "", "更新 / 卸载"),
 ]
 
 all_tools = [
@@ -105,10 +107,11 @@ all_tools = [
     OtherTools(),
     ToolManager(),
 ]
+localize_tool_tree(all_tools)
 
 # Used by generate_readme.py
 class AllTools(HackingToolsCollection):
-    TITLE = "All tools"
+    TITLE = "全部工具"
     TOOLS = all_tools
 
 
@@ -117,32 +120,32 @@ class AllTools(HackingToolsCollection):
 def show_help():
     console.print(Panel(
         Text.assemble(
-            ("  Main menu\n", "bold white"),
+            ("  主菜单\n", "bold white"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1–20   ", "bold cyan"), ("open a category\n", "white"),
-            ("  21     ", "bold cyan"), ("Update / Uninstall hackingtool\n", "white"),
-            ("  / or s ", "bold cyan"), ("search tools by name or keyword\n", "white"),
-            ("  t      ", "bold cyan"), ("filter tools by tag (osint, web, c2, ...)\n", "white"),
-            ("  r      ", "bold cyan"), ("recommend tools for a task\n", "white"),
-            ("  ?      ", "bold cyan"), ("show this help\n", "white"),
-            ("  q      ", "bold cyan"), ("quit hackingtool\n\n", "white"),
-            ("  Inside a category\n", "bold white"),
+            ("  1–20   ", "bold cyan"), ("进入某个分类\n", "white"),
+            ("  21     ", "bold cyan"), ("更新 / 卸载 Hackingtool\n", "white"),
+            ("  / 或 s ", "bold cyan"), ("按名称或关键词搜索工具\n", "white"),
+            ("  t      ", "bold cyan"), ("按标签筛选工具（osint、web、c2 等）\n", "white"),
+            ("  r      ", "bold cyan"), ("按任务推荐工具\n", "white"),
+            ("  ?      ", "bold cyan"), ("显示帮助\n", "white"),
+            ("  q      ", "bold cyan"), ("退出 Hackingtool\n\n", "white"),
+            ("  分类内\n", "bold white"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1–N    ", "bold cyan"), ("select a tool\n", "white"),
-            ("  99     ", "bold cyan"), ("back to main menu\n", "white"),
-            ("  98     ", "bold cyan"), ("open project page (if available)\n\n", "white"),
-            ("  Inside a tool\n", "bold white"),
+            ("  1–N    ", "bold cyan"), ("选择工具\n", "white"),
+            ("  99     ", "bold cyan"), ("返回主菜单\n", "white"),
+            ("  98     ", "bold cyan"), ("打开项目主页（若可用）\n\n", "white"),
+            ("  工具页内\n", "bold white"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1      ", "bold cyan"), ("install tool\n", "white"),
-            ("  2      ", "bold cyan"), ("run tool\n", "white"),
-            ("  99     ", "bold cyan"), ("back to category\n", "white"),
+            ("  1      ", "bold cyan"), ("安装工具\n", "white"),
+            ("  2      ", "bold cyan"), ("运行工具\n", "white"),
+            ("  99     ", "bold cyan"), ("返回分类\n", "white"),
         ),
-        title="[bold magenta] ? Quick Help [/bold magenta]",
+        title="[bold magenta] 帮助 [/bold magenta]",
         border_style="magenta",
         box=box.ROUNDED,
         padding=(0, 2),
     ))
-    Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+    Prompt.ask("[dim]按回车返回[/dim]", default="")
 
 
 # ── Header: ASCII art + live system info ──────────────────────────────────────
@@ -164,16 +167,13 @@ _BANNER_ART = [
 ]
 
 _QUOTES = [
-    '"The quieter you become, the more you can hear."',
-    '"Offense informs defense."',
-    '"There is no patch for human stupidity."',
-    '"In God we trust. All others we monitor."',
-    '"Hackers are the immune system of the internet."',
-    '"Every system is hackable — know yours before others do."',
-    '"Enumerate before you exploit."',
-    '"A scope defines your playground."',
-    '"The more you sweat in training, the less you bleed in battle."',
-    '"Security is a process, not a product."',
+    '"越安静，越能听见更多细节。"',
+    '"进攻是防守最好的老师。"',
+    '"对人的愚蠢，没有补丁可打。"',
+    '"先清点，再利用。"',
+    '"范围定义了你的战场。"',
+    '"训练时多流汗，实战时少流血。"',
+    '"安全是一种持续过程，不是单一产品。"',
 ]
 
 
@@ -193,9 +193,9 @@ def _sys_info() -> dict:
 
     # Current user
     try:
-        info["user"] = os.getlogin()
+        info["user"] = os.environ.get("USER") or os.environ.get("LOGNAME") or getpass.getuser()
     except Exception:
-        info["user"] = os.environ.get("USER", os.environ.get("LOGNAME", "root"))
+        info["user"] = getpass.getuser()
 
     info["host"] = socket.gethostname()
 
@@ -218,16 +218,16 @@ def _build_header() -> Panel:
 
     # 12 stat lines paired with the 12 art lines
     stat_lines = [
-        ("  os      ›  ", info["os"][:34]),
-        ("  kernel  ›  ", info["kernel"][:34]),
-        ("  user    ›  ", f"{info['user']} @ {info['host'][:20]}"),
-        ("  ip      ›  ", info["ip"]),
-        ("  tools   ›  ", f"{len(all_tools)} categories · 185+ modules"),
-        ("  session ›  ", info["time"]),
+        ("  系统    ›  ", info["os"][:34]),
+        ("  内核    ›  ", info["kernel"][:34]),
+        ("  用户    ›  ", f"{info['user']} @ {info['host'][:20]}"),
+        ("  地址    ›  ", info["ip"]),
+        ("  分类    ›  ", f"{len(all_tools)} 个分类 · 185+ 模块"),
+        ("  会话    ›  ", info["time"]),
         ("", ""),
-        ("  python  ›  ", f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"),
-        ("  arch    ›  ", platform.machine()),
-        ("  status  ›  ", "✔ READY"),
+        ("  Python  ›  ", f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"),
+        ("  架构    ›  ", platform.machine()),
+        ("  状态    ›  ", "已就绪"),
         ("", ""),
         ("", ""),
     ]
@@ -253,7 +253,7 @@ def _build_header() -> Panel:
     body.add_row(grid)
     body.add_row(Text(""))
     body.add_row(Text(f"  {quote}", style="italic dim"))
-    body.add_row(Text("  ⚠  For authorized security testing only",
+    body.add_row(Text("  仅限经授权的安全测试使用",
                       style="bold dim red"))
 
     return Panel(
@@ -301,7 +301,7 @@ def build_menu():
 
     console.print(Panel(
         grid,
-        title="[bold magenta] Select a Category [/bold magenta]",
+        title="[bold magenta] 选择分类 [/bold magenta]",
         border_style="bright_magenta",
         box=box.ROUNDED,
         padding=(0, 1),
@@ -310,18 +310,18 @@ def build_menu():
     # ── ToolManager row ──
     tm_num = len(categories) + 1
     console.print(
-        f"  [bold magenta]  {tm_num}[/bold magenta]  {update_def[1]}  "
+        f"  [bold magenta]  {tm_num}[/bold magenta]  "
         f"[magenta]{update_def[2]}[/magenta]"
     )
 
     # ── Claude-style dual-line prompt area ──
     console.print(Rule(style="dim magenta"))
     console.print(
-        "  [dim cyan]/[/dim cyan][dim]search[/dim]  "
-        "[dim cyan]t[/dim cyan] [dim]tags[/dim]  "
-        "[dim cyan]r[/dim cyan] [dim]recommend[/dim]  "
-        "[dim cyan]?[/dim cyan] [dim]help[/dim]  "
-        "[dim cyan]q[/dim cyan] [dim]quit[/dim]"
+        "  [dim cyan]/[/dim cyan][dim]搜索[/dim]  "
+        "[dim cyan]t[/dim cyan] [dim]标签[/dim]  "
+        "[dim cyan]r[/dim cyan] [dim]推荐[/dim]  "
+        "[dim cyan]?[/dim cyan] [dim]帮助[/dim]  "
+        "[dim cyan]q[/dim cyan] [dim]退出[/dim]"
     )
 
 
@@ -369,7 +369,15 @@ def _get_all_tags() -> dict[str, list[tuple]]:
     }
     tag_index: dict[str, list[tuple]] = {}
     for tool, cat in _collect_all_tools():
-        combined = f"{tool.TITLE} {tool.DESCRIPTION}".lower()
+        combined = " ".join(
+            part for part in [
+                tool.TITLE,
+                tool.DESCRIPTION,
+                original_text(tool, "TITLE"),
+                original_text(tool, "DESCRIPTION"),
+            ]
+            if part
+        ).lower()
         # Manual tags first
         tool_tags = set(getattr(tool, "TAGS", []) or [])
         # Auto-derive tags from title/description
@@ -389,32 +397,32 @@ def filter_by_tag():
     # Show tags in a compact grid
     console.print(Panel(
         "  ".join(f"[bold cyan]{t}[/bold cyan]([dim]{len(tag_index[t])}[/dim])" for t in sorted_tags),
-        title="[bold magenta] Available Tags [/bold magenta]",
+        title="[bold magenta] 可用标签 [/bold magenta]",
         border_style="magenta", box=box.ROUNDED, padding=(0, 2),
     ))
 
-    tag = Prompt.ask("[bold cyan]Enter tag[/bold cyan]", default="").strip().lower()
+    tag = Prompt.ask("[bold cyan]输入标签[/bold cyan]", default="").strip().lower()
     if not tag or tag not in tag_index:
         if tag:
-            console.print(f"[dim]Tag '{tag}' not found.[/dim]")
-            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            console.print(f"[dim]未找到标签 '{tag}'。[/dim]")
+            Prompt.ask("[dim]按回车返回[/dim]", default="")
         return
 
     matches = tag_index[tag]
     table = Table(
-        title=f"Tools tagged '{tag}'",
+        title=f"标签为 '{tag}' 的工具",
         box=box.SIMPLE_HEAD, show_lines=True,
     )
-    table.add_column("No.", justify="center", style="bold cyan", width=5)
-    table.add_column("", width=2)
-    table.add_column("Tool", style="bold yellow", min_width=20)
-    table.add_column("Category", style="magenta", min_width=15)
+    table.add_column("编号", justify="center", style="bold cyan", width=5)
+    table.add_column("状态", width=6)
+    table.add_column("工具", style="bold yellow", min_width=20)
+    table.add_column("分类", style="magenta", min_width=15)
 
     for i, (tool, cat) in enumerate(matches, start=1):
-        status = "[green]✔[/green]" if tool.is_installed else "[dim]✘[/dim]"
+        status = "[green]已装[/green]" if tool.is_installed else "[dim]未装[/dim]"
         table.add_row(str(i), status, tool.TITLE, cat)
 
-    table.add_row("99", "", "Back to main menu", "")
+    table.add_row("99", "", "返回主菜单", "")
     console.print(table)
 
     raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
@@ -430,45 +438,45 @@ def filter_by_tag():
 
 
 _RECOMMENDATIONS = {
-    "scan a network":           ["scanner", "port-scanner"],
-    "find subdomains":          ["recon"],
-    "scan for vulnerabilities": ["scanner", "web"],
-    "crack passwords":          ["bruteforce", "credentials"],
-    "find leaked secrets":      ["credentials"],
-    "phishing campaign":        ["social-engineering"],
-    "post exploitation":        ["c2", "privesc"],
-    "pivot through network":    ["network"],
-    "pentest active directory": ["active-directory"],
-    "pentest web application":  ["web", "scanner"],
-    "pentest cloud":            ["cloud"],
-    "pentest mobile app":       ["mobile"],
-    "reverse engineer binary":  ["reversing"],
-    "capture wifi handshake":   ["wireless"],
-    "intercept http traffic":   ["web", "network"],
-    "forensic analysis":        ["forensics"],
-    "ddos testing":             ["ddos"],
-    "create payloads":          ["payload"],
-    "find xss vulnerabilities": ["web"],
-    "brute force directories":  ["bruteforce", "web"],
-    "osint / recon a target":   ["osint", "recon"],
-    "hide my identity":         ["network"],
+    "扫描网络":           ["scanner", "port-scanner"],
+    "查找子域名":         ["recon"],
+    "扫描漏洞":           ["scanner", "web"],
+    "破解密码":           ["bruteforce", "credentials"],
+    "查找泄露密钥":       ["credentials"],
+    "钓鱼演练":           ["social-engineering"],
+    "后渗透":             ["c2", "privesc"],
+    "网络横向移动":       ["network"],
+    "渗透活动目录":       ["active-directory"],
+    "渗透 Web 应用":     ["web", "scanner"],
+    "云环境渗透":         ["cloud"],
+    "移动应用渗透":       ["mobile"],
+    "逆向二进制文件":     ["reversing"],
+    "抓取 WiFi 握手包": ["wireless"],
+    "拦截 HTTP 流量":    ["web", "network"],
+    "取证分析":           ["forensics"],
+    "DDoS 测试":         ["ddos"],
+    "生成载荷":           ["payload"],
+    "查找 XSS 漏洞":     ["web"],
+    "爆破目录":           ["bruteforce", "web"],
+    "对目标做 OSINT / 侦察": ["osint", "recon"],
+    "隐藏身份":           ["network"],
 }
 
 
 def recommend_tools():
     """Show common tasks, user picks one, show matching tools."""
     table = Table(
-        title="What do you want to do?",
+        title="你想做什么？",
         box=box.SIMPLE_HEAD,
     )
-    table.add_column("No.", justify="center", style="bold cyan", width=5)
-    table.add_column("Task", style="bold yellow")
+    table.add_column("编号", justify="center", style="bold cyan", width=5)
+    table.add_column("任务", style="bold yellow")
 
     tasks = list(_RECOMMENDATIONS.keys())
     for i, task in enumerate(tasks, start=1):
-        table.add_row(str(i), task.title())
+        table.add_row(str(i), task)
 
-    table.add_row("99", "Back to main menu")
+    table.add_row("99", "返回主菜单")
     console.print(table)
 
     raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
@@ -495,26 +503,26 @@ def recommend_tools():
                     matches.append((tool, cat))
 
         if not matches:
-            console.print("[dim]No tools found for this task.[/dim]")
-            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            console.print("[dim]没有找到适合该任务的工具。[/dim]")
+            Prompt.ask("[dim]按回车返回[/dim]", default="")
             return
 
         console.print(Panel(
-            f"[bold]Recommended tools for: {task.title()}[/bold]",
+            f"[bold]推荐工具：{task}[/bold]",
             border_style="green", box=box.ROUNDED,
         ))
 
         rtable = Table(box=box.SIMPLE_HEAD, show_lines=True)
-        rtable.add_column("No.", justify="center", style="bold cyan", width=5)
-        rtable.add_column("", width=2)
-        rtable.add_column("Tool", style="bold yellow", min_width=20)
-        rtable.add_column("Category", style="magenta")
+        rtable.add_column("编号", justify="center", style="bold cyan", width=5)
+        rtable.add_column("状态", width=6)
+        rtable.add_column("工具", style="bold yellow", min_width=20)
+        rtable.add_column("分类", style="magenta")
 
         for i, (tool, cat) in enumerate(matches, start=1):
-            status = "[green]✔[/green]" if tool.is_installed else "[dim]✘[/dim]"
+            status = "[green]已装[/green]" if tool.is_installed else "[dim]未装[/dim]"
             rtable.add_row(str(i), status, tool.TITLE, cat)
 
-        rtable.add_row("99", "", "Back", "")
+        rtable.add_row("99", "", "返回", "")
         console.print(rtable)
 
         raw2 = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
@@ -530,7 +538,7 @@ def recommend_tools():
 def search_tools(query: str | None = None):
     """Search tools — accepts inline query or prompts for one."""
     if query is None:
-        query = Prompt.ask("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
+        query = Prompt.ask("[bold cyan]/ 搜索[/bold cyan]", default="").strip().lower()
     else:
         query = query.lower()
     if not query:
@@ -543,30 +551,32 @@ def search_tools(query: str | None = None):
     for tool, category in all_tool_list:
         title = (tool.TITLE or "").lower()
         desc = (tool.DESCRIPTION or "").lower()
+        original_title = (original_text(tool, "TITLE") or "").lower()
+        original_desc = (original_text(tool, "DESCRIPTION") or "").lower()
         tags = " ".join(getattr(tool, "TAGS", []) or []).lower()
-        if query in title or query in desc or query in tags:
+        if query in title or query in desc or query in original_title or query in original_desc or query in tags:
             matches.append((tool, category))
 
     if not matches:
-        console.print(f"[dim]No tools found matching '{query}'[/dim]")
-        Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+        console.print(f"[dim]没有找到匹配 '{query}' 的工具。[/dim]")
+        Prompt.ask("[dim]按回车返回[/dim]", default="")
         return
 
     # Display results
     table = Table(
-        title=f"Search results for '{query}'",
+        title=f"搜索结果：'{query}'",
         box=box.SIMPLE_HEAD, show_lines=True,
     )
-    table.add_column("No.", justify="center", style="bold cyan", width=5)
-    table.add_column("Tool", style="bold yellow", min_width=20)
-    table.add_column("Category", style="magenta", min_width=15)
-    table.add_column("Description", style="white", overflow="fold")
+    table.add_column("编号", justify="center", style="bold cyan", width=5)
+    table.add_column("工具", style="bold yellow", min_width=20)
+    table.add_column("分类", style="magenta", min_width=15)
+    table.add_column("说明", style="white", overflow="fold")
 
     for i, (tool, cat) in enumerate(matches, start=1):
         desc = (tool.DESCRIPTION or "—").splitlines()[0]
         table.add_row(str(i), tool.TITLE, cat, desc)
 
-    table.add_row("99", "Back to main menu", "", "")
+    table.add_row("99", "返回主菜单", "", "")
     console.print(table)
 
     raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip().lower()
@@ -602,7 +612,7 @@ def interact_menu():
 
             raw_lower = raw.lower()
 
-            if raw_lower in ("?", "help"):
+            if raw_lower in ("?", "help", "帮助"):
                 show_help()
                 continue
 
@@ -612,21 +622,21 @@ def interact_menu():
                 search_tools(query=query if query else None)
                 continue
 
-            if raw_lower in ("s", "search"):
+            if raw_lower in ("s", "search", "搜索"):
                 search_tools()
                 continue
 
-            if raw_lower in ("t", "tag", "tags", "filter"):
+            if raw_lower in ("t", "tag", "tags", "filter", "标签"):
                 filter_by_tag()
                 continue
 
-            if raw_lower in ("r", "rec", "recommend"):
+            if raw_lower in ("r", "rec", "recommend", "推荐"):
                 recommend_tools()
                 continue
 
-            if raw_lower in ("q", "quit", "exit"):
+            if raw_lower in ("q", "quit", "exit", "退出"):
                 console.print(Panel(
-                    "[bold white on magenta]  Goodbye — Come Back Safely  [/bold white on magenta]",
+                    "[bold white on magenta]  再见，注意安全  [/bold white on magenta]",
                     box=box.HEAVY, border_style="magenta",
                 ))
                 break
@@ -634,30 +644,30 @@ def interact_menu():
             try:
                 choice = int(raw_lower)
             except ValueError:
-                console.print("[red]⚠  Invalid input — enter a number, /query to search, or q to quit.[/red]")
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                console.print("[red]输入无效，请输入数字、/关键词 搜索，或 q 退出。[/red]")
+                Prompt.ask("[dim]按回车继续[/dim]", default="")
                 continue
 
             if 1 <= choice <= len(all_tools):
-                title, icon, _ = tool_definitions[choice - 1]
+                title, _, _ = tool_definitions[choice - 1]
                 console.print(Panel(
-                    f"[bold magenta]{icon}  {title}[/bold magenta]",
+                    f"[bold magenta]{title}[/bold magenta]",
                     border_style="magenta", box=box.ROUNDED,
                 ))
                 try:
                     all_tools[choice - 1].show_options()
                 except Exception as e:
                     console.print(Panel(
-                        f"[red]Error while opening {title}[/red]\n{e}",
+                        f"[red]打开 {title} 时出错[/red]\n{e}",
                         border_style="red",
                     ))
-                    Prompt.ask("[dim]Press Enter to return to main menu[/dim]", default="")
+                    Prompt.ask("[dim]按回车返回主菜单[/dim]", default="")
             else:
-                console.print(f"[red]⚠  Choose 1–{len(all_tools)}, ? for help, or q to quit.[/red]")
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                console.print(f"[red]请输入 1–{len(all_tools)}，或输入 ? 查看帮助、q 退出。[/red]")
+                Prompt.ask("[dim]按回车继续[/dim]", default="")
 
         except KeyboardInterrupt:
-            console.print("\n[bold red]Interrupted — exiting[/bold red]")
+            console.print("\n[bold red]已中断，正在退出[/bold red]")
             break
 
 
@@ -668,19 +678,19 @@ def main():
         from os_detect import CURRENT_OS
 
         if CURRENT_OS.system == "windows":
-            console.print(Panel("[bold red]Please run this tool on Linux or macOS.[/bold red]"))
+            console.print(Panel("[bold red]请在 Linux 或 macOS 上运行此工具。[/bold red]"))
             if Confirm.ask("Open guidance link in your browser?", default=True):
                 webbrowser.open_new_tab(f"{REPO_WEB_URL}#windows")
             return
 
         if CURRENT_OS.system not in ("linux", "macos"):
-            console.print(f"[yellow]Unsupported OS: {CURRENT_OS.system}. Proceeding anyway...[/yellow]")
+            console.print(f"[yellow]当前操作系统 {CURRENT_OS.system} 未正式支持，仍将继续尝试启动。[/yellow]")
 
         get_tools_dir()   # ensures ~/.hackingtool/tools/ exists
         interact_menu()
 
     except KeyboardInterrupt:
-        console.print("\n[bold red]Exiting...[/bold red]")
+        console.print("\n[bold red]正在退出...[/bold red]")
 
 
 if __name__ == "__main__":
