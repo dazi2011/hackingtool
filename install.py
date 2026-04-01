@@ -37,11 +37,34 @@ REQUIREMENTS   = "requirements.txt"
 
 # ── Privilege check ────────────────────────────────────────────────────────────
 
-def check_root():
+def _can_write_install_targets() -> bool:
+    targets = [APP_INSTALL_DIR.parent, APP_BIN_PATH.parent]
+    for target in targets:
+        if not os.access(target, os.W_OK):
+            return False
+    for existing in (APP_INSTALL_DIR, APP_BIN_PATH):
+        if existing.exists() and not os.access(existing, os.W_OK):
+            return False
+    return True
+
+
+def check_privileges():
+    if os.geteuid() == 0:
+        return
+
+    # On macOS, Homebrew-style paths may already be user-writable.
+    if CURRENT_OS.system == "macos" and _can_write_install_targets():
+        console.print("[dim]检测到 macOS 且安装目标可写，将以当前用户身份继续安装。[/dim]")
+        return
+
+    install_hint = "sudo python3 install.py"
+    if CURRENT_OS.system == "macos":
+        install_hint = "sudo python3 install.py 或确保 /usr/local/share 与 /usr/local/bin 可写"
+
     if os.geteuid() != 0:
         console.print(Panel(
             "[error]此安装器必须以 root 身份运行。\n"
-            "请使用：[bold]sudo python3 install.py[/bold][/error]",
+            f"请使用：[bold]{install_hint}[/bold][/error]",
             border_style="red",
         ))
         sys.exit(1)
@@ -159,7 +182,8 @@ def install_source() -> bool:
             subprocess.run(["rm", "-rf", str(APP_INSTALL_DIR)], check=True)
         subprocess.run(["cp", "-a", str(source_dir), str(APP_INSTALL_DIR)], check=True)
         # Fix ownership so git doesn't complain about "dubious ownership"
-        subprocess.run(["chown", "-R", "root:root", str(APP_INSTALL_DIR)], check=False)
+        if os.geteuid() == 0:
+            subprocess.run(["chown", "-R", "root:root", str(APP_INSTALL_DIR)], check=False)
         console.print("[success]源码复制完成（无需重新克隆）。[/success]")
         return True
 
@@ -225,7 +249,7 @@ def create_user_directories():
 # ── Entry point ────────────────────────────────────────────────────────────────
 
 def main():
-    check_root()
+    check_privileges()
     console.clear()
 
     console.print(Panel(
