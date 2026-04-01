@@ -35,6 +35,19 @@ VENV_DIR_NAME = "venv"
 REQUIREMENTS   = "requirements.txt"
 
 
+PACKAGE_BINARIES: dict[str, dict[str, str]] = {
+    "brew": {
+        "git": "git",
+        "python3": "python3",
+        "curl": "curl",
+        "wget": "wget",
+        "ruby": "ruby",
+        "go": "go",
+        "php": "php",
+    }
+}
+
+
 # ── Privilege check ────────────────────────────────────────────────────────────
 
 def _can_write_install_targets() -> bool:
@@ -144,6 +157,16 @@ def install_system_packages():
     packages = REQUIRED_PACKAGES.get(mgr, [])
     if not packages:
         return
+
+    # On macOS/Homebrew, avoid reinstalling formulas when the required
+    # command is already available. This prevents unnecessary privilege prompts.
+    if mgr in PACKAGE_BINARIES:
+        binary_map = PACKAGE_BINARIES[mgr]
+        missing = [pkg for pkg in packages if not shutil.which(binary_map.get(pkg, pkg))]
+        if not missing:
+            console.print("[dim]系统依赖已齐全，跳过安装。[/dim]")
+            return
+        packages = missing
 
     install_tpl = PACKAGE_INSTALL_CMDS[mgr]
     cmd = install_tpl.format(packages=" ".join(packages))
