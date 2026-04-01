@@ -33,6 +33,7 @@ console = Console()
 
 VENV_DIR_NAME = "venv"
 REQUIREMENTS   = "requirements.txt"
+BOOTSTRAP_PYTHON = os.environ.get("HACKINGTOOL_BOOTSTRAP_PYTHON") or shutil.which("python3") or sys.executable
 
 
 PACKAGE_BINARIES: dict[str, dict[str, str]] = {
@@ -225,7 +226,7 @@ def install_source() -> bool:
 def create_venv_and_install():
     venv_path = APP_INSTALL_DIR / VENV_DIR_NAME
     console.print("[dim]正在创建虚拟环境...[/dim]")
-    subprocess.run([sys.executable, "-m", "venv", str(venv_path)], check=True)
+    subprocess.run([BOOTSTRAP_PYTHON, "-m", "venv", str(venv_path)], check=True)
 
     pip = str(venv_path / "bin" / "pip")
     req = APP_INSTALL_DIR / REQUIREMENTS
