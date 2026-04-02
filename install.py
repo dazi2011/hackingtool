@@ -22,7 +22,7 @@ from rich.text import Text
 from rich import box
 
 from constants import (
-    REPO_URL, APP_INSTALL_DIR, APP_BIN_PATH,
+    REPO_URL, REPO_REF, APP_INSTALL_DIR, APP_BIN_PATH,
     VERSION, VERSION_DISPLAY,
     USER_CONFIG_DIR, USER_TOOLS_DIR, USER_CONFIG_FILE,
     DEFAULT_CONFIG,
@@ -212,8 +212,11 @@ def install_source() -> bool:
         return True
 
     # Not running from source — clone from GitHub
-    console.print(f"[dim]正在克隆 {REPO_URL}...[/dim]")
-    r = subprocess.run(["git", "clone", "--depth", "1", REPO_URL, str(APP_INSTALL_DIR)], check=False)
+    console.print(f"[dim]正在克隆 {REPO_URL}（分支：{REPO_REF}）...[/dim]")
+    r = subprocess.run(
+        ["git", "clone", "--depth", "1", "--branch", REPO_REF, "--single-branch", REPO_URL, str(APP_INSTALL_DIR)],
+        check=False,
+    )
     if r.returncode == 0:
         console.print("[success]仓库克隆完成。[/success]")
         return True

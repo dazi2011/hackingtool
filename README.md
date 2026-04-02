@@ -438,7 +438,7 @@ Required: class in `tools/*.py`, TITLE, DESCRIPTION, INSTALL/RUN commands, SUPPO
 ### One-liner (recommended)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/Z4nzu/hackingtool/master/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/dazi2011/hackingtool/codex/zh-cn-localization/install.sh | sudo bash
 ```
 
 Handles everything — prerequisites, clone, venv, launcher.
@@ -449,7 +449,7 @@ Handles everything — prerequisites, clone, venv, launcher.
 ### Manual
 
 ```bash
-git clone https://github.com/Z4nzu/hackingtool.git
+git clone --depth 1 --branch codex/zh-cn-localization https://github.com/dazi2011/hackingtool.git
 cd hackingtool
 sudo python3 install.py
 ```
