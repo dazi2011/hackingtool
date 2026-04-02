@@ -17,7 +17,7 @@ from rich.traceback import install
 from constants import (
     THEME_PRIMARY, THEME_BORDER, THEME_ACCENT,
     THEME_SUCCESS, THEME_ERROR, THEME_WARNING,
-    THEME_DIM, THEME_ARCHIVED, THEME_URL,
+    THEME_DIM, THEME_ARCHIVED, THEME_URL, THEME_TEXT,
 )
 from localization import patch_console, patch_interaction, tr
 
@@ -25,7 +25,10 @@ from localization import patch_console, patch_interaction, tr
 install()
 
 _theme = Theme({
-    "purple":   "#7B61FF",
+    "primary":  THEME_PRIMARY,
+    "accent":   THEME_ACCENT,
+    "text":     THEME_TEXT,
+    "purple":   THEME_BORDER,
     "success":  THEME_SUCCESS,
     "error":    THEME_ERROR,
     "warning":  THEME_WARNING,
@@ -61,18 +64,18 @@ def _show_inline_help():
     """Quick help available from any menu level."""
     console.print(Panel(
         Text.assemble(
-            ("  导航说明\n", "bold white"),
+            ("  导航说明\n", "bold"),
             ("  ─────────────────────────────────\n", "dim"),
-            ("  1–N    ", "bold cyan"), ("选择条目\n", "white"),
-            ("  97     ", "bold cyan"), ("安装当前分类中的全部工具\n", "white"),
+            ("  1–N    ", "accent"), ("选择条目\n", "text"),
+            ("  97     ", "accent"), ("安装当前分类中的全部工具\n", "text"),
             ("\n  工具菜单：安装 / 运行 / 更新 / 打开目录\n", "dim"),
-            ("  99     ", "bold cyan"), ("返回上一级\n", "white"),
-            ("  98     ", "bold cyan"), ("打开项目主页 / 查看已归档工具\n", "white"),
-            ("  ?      ", "bold cyan"), ("显示帮助\n", "white"),
-            ("  q      ", "bold cyan"), ("退出 Hackingtool\n", "white"),
+            ("  99     ", "accent"), ("返回上一级\n", "text"),
+            ("  98     ", "accent"), ("打开项目主页 / 查看已归档工具\n", "text"),
+            ("  ?      ", "accent"), ("显示帮助\n", "text"),
+            ("  q      ", "accent"), ("退出 Hackingtool\n", "text"),
         ),
-        title="[bold magenta] 帮助 [/bold magenta]",
-        border_style="magenta",
+        title="[primary] 帮助 [/primary]",
+        border_style="primary",
         box=box.ROUNDED,
         padding=(0, 2),
     ))
@@ -144,14 +147,14 @@ class HackingTool:
         return False
 
     def show_info(self):
-        desc = f"[cyan]{self.DESCRIPTION}[/cyan]"
+        desc = f"[text]{self.DESCRIPTION}[/text]"
         if self.PROJECT_URL:
             desc += f"\n[url]项目主页：{self.PROJECT_URL}[/url]"
         if self.ARCHIVED:
             desc += f"\n[archived]已归档：{self.ARCHIVED_REASON}[/archived]"
         console.print(Panel(
             desc,
-            title=f"[{THEME_PRIMARY}]{self.TITLE}[/{THEME_PRIMARY}]",
+            title=f"[primary]{self.TITLE}[/primary]",
             border_style="purple",
             box=box.DOUBLE,
         ))
@@ -163,8 +166,8 @@ class HackingTool:
             self.show_info()
 
             table = Table(title="操作", box=box.SIMPLE_HEAVY)
-            table.add_column("编号", style="bold cyan", justify="center")
-            table.add_column("动作", style="bold yellow")
+            table.add_column("编号", style="accent", justify="center")
+            table.add_column("动作", style="bold")
 
             for index, option in enumerate(self.OPTIONS):
                 table.add_row(str(index + 1), tr(option[0]))
@@ -174,12 +177,12 @@ class HackingTool:
             table.add_row("99", f"返回到 {parent.TITLE if parent else '主菜单'}")
             console.print(table)
             console.print(
-                "  [dim cyan]?[/dim cyan][dim]帮助  "
-                "[/dim][dim cyan]q[/dim cyan][dim]退出  "
-                "[/dim][dim cyan]99[/dim cyan][dim]返回[/dim]"
+                "  [accent]?[/accent] [dim]帮助[/dim]  "
+                "[accent]q[/accent] [dim]退出[/dim]  "
+                "[accent]99[/accent] [dim]返回[/dim]"
             )
 
-            raw = Prompt.ask("[bold cyan]╰─>[/bold cyan]", default="").strip().lower()
+            raw = Prompt.ask("[accent]╰─>[/accent]", default="").strip().lower()
             if not raw:
                 continue
             if raw in ("?", "help", "帮助"):
@@ -249,23 +252,23 @@ class HackingTool:
                 if repo_urls:
                     dirname = repo_urls[0].rstrip("/").rsplit("/", 1)[-1].replace(".git", "")
                     if os.path.isdir(dirname):
-                        console.print(f"[cyan]执行更新命令：git -C {dirname} pull[/cyan]")
+                        console.print(f"[accent]执行更新命令：git -C {dirname} pull[/accent]")
                         os.system(f"git -C {dirname} pull")
                         updated = True
             elif "pip install" in ic:
                 # Re-run pip install (--upgrade)
                 upgrade_cmd = ic.replace("pip install", "pip install --upgrade")
-                console.print(f"[cyan]执行更新命令：{upgrade_cmd}[/cyan]")
+                console.print(f"[accent]执行更新命令：{upgrade_cmd}[/accent]")
                 os.system(upgrade_cmd)
                 updated = True
             elif "go install" in ic:
                 # Re-run go install (fetches latest)
-                console.print(f"[cyan]执行更新命令：{ic}[/cyan]")
+                console.print(f"[accent]执行更新命令：{ic}[/accent]")
                 os.system(ic)
                 updated = True
             elif "gem install" in ic:
                 upgrade_cmd = ic.replace("gem install", "gem update")
-                console.print(f"[cyan]执行更新命令：{upgrade_cmd}[/cyan]")
+                console.print(f"[accent]执行更新命令：{upgrade_cmd}[/accent]")
                 os.system(upgrade_cmd)
                 updated = True
 
@@ -321,7 +324,7 @@ class HackingTool:
             console.print("[warning]未找到工具目录。[/warning]")
             if self.PROJECT_URL:
                 console.print("[dim]你也可以手动克隆：[/dim]")
-                console.print(f"[cyan]  git clone {self.PROJECT_URL}.git[/cyan]")
+                console.print(f"[accent]  git clone {self.PROJECT_URL}.git[/accent]")
 
     def before_run(self): pass
 
@@ -329,7 +332,7 @@ class HackingTool:
         self.before_run()
         if isinstance(self.RUN_COMMANDS, (list, tuple)):
             for cmd in self.RUN_COMMANDS:
-                console.print(f"[cyan]正在执行：[/cyan] [bold]{cmd}[/bold]")
+                console.print(f"[accent]正在执行：[/accent] [bold]{cmd}[/bold]")
                 os.system(cmd)
         self.after_run()
 
@@ -349,9 +352,9 @@ class HackingToolsCollection:
         pass
 
     def show_info(self):
-        console.rule(f"[{THEME_PRIMARY}]{self.TITLE}[/{THEME_PRIMARY}]", style="purple")
+        console.rule(f"[primary]{self.TITLE}[/primary]", style="primary")
         if self.DESCRIPTION:
-            console.print(f"[italic cyan]{self.DESCRIPTION}[/italic cyan]\n")
+            console.print(f"[text]{self.DESCRIPTION}[/text]\n")
 
     def _active_tools(self) -> list:
         """Return tools that are not archived and are OS-compatible."""
@@ -386,9 +389,9 @@ class HackingToolsCollection:
             console.rule(f"[archived]已归档工具 — {self.TITLE}[/archived]", style="yellow")
 
             table = Table(box=box.MINIMAL_DOUBLE_HEAD, show_lines=True)
-            table.add_column("编号", justify="center", style="bold yellow")
-            table.add_column("工具", style="dim yellow")
-            table.add_column("原因", style="dim white")
+            table.add_column("编号", justify="center", style="accent")
+            table.add_column("工具", style="archived")
+            table.add_column("原因", style="text")
 
             for i, tool in enumerate(archived):
                 reason = getattr(tool, "ARCHIVED_REASON", "未说明原因")
@@ -397,7 +400,7 @@ class HackingToolsCollection:
             table.add_row("99", "返回", "")
             console.print(table)
 
-            raw = Prompt.ask("[bold yellow][?] 选择[/bold yellow]", default="99")
+            raw = Prompt.ask("[accent][?] 选择[/accent]", default="99")
             try:
                 choice = int(raw)
             except ValueError:
@@ -419,10 +422,10 @@ class HackingToolsCollection:
             archived = self._archived_tools()
 
             table = Table(title="可用工具", box=box.SIMPLE_HEAD, show_lines=True)
-            table.add_column("编号", justify="center", style="bold cyan", width=6)
+            table.add_column("编号", justify="center", style="accent", width=6)
             table.add_column("状态", width=6)
-            table.add_column("工具", style="bold yellow", min_width=24)
-            table.add_column("说明", style="white", overflow="fold")
+            table.add_column("工具", style="bold", min_width=24)
+            table.add_column("说明", style="text", overflow="fold")
 
             for index, tool in enumerate(active, start=1):
                 desc = getattr(tool, "DESCRIPTION", "") or "—"
@@ -435,23 +438,23 @@ class HackingToolsCollection:
             not_installed = [t for t in active if hasattr(t, "is_installed") and not t.is_installed]
             if not_installed:
                 table.add_row(
-                    "[bold green]97[/bold green]", "",
-                    f"[bold green]安装全部（{len(not_installed)} 个未安装）[/bold green]", "",
+                    "[success]97[/success]", "",
+                    f"[success]安装全部（{len(not_installed)} 个未安装）[/success]", "",
                 )
             if archived:
-                table.add_row("[dim]98[/dim]", "", f"[archived]已归档工具（{len(archived)}）[/archived]", "")
+                table.add_row("[accent]98[/accent]", "", f"[archived]已归档工具（{len(archived)}）[/archived]", "")
             if incompatible:
                 console.print(f"[dim]（已隐藏 {len(incompatible)} 个当前操作系统不支持的工具）[/dim]")
 
             table.add_row("99", "", f"返回到 {parent.TITLE if parent else '主菜单'}", "")
             console.print(table)
             console.print(
-                "  [dim cyan]?[/dim cyan][dim]帮助  "
-                "[/dim][dim cyan]q[/dim cyan][dim]退出  "
-                "[/dim][dim cyan]99[/dim cyan][dim]返回[/dim]"
+                "  [accent]?[/accent] [dim]帮助[/dim]  "
+                "[accent]q[/accent] [dim]退出[/dim]  "
+                "[accent]99[/accent] [dim]返回[/dim]"
             )
 
-            raw = Prompt.ask("[bold cyan]╰─>[/bold cyan]", default="").strip().lower()
+            raw = Prompt.ask("[accent]╰─>[/accent]", default="").strip().lower()
             if not raw:
                 continue
             if raw in ("?", "help", "帮助"):
@@ -471,10 +474,10 @@ class HackingToolsCollection:
             elif choice == 97 and not_installed:
                 console.print(Panel(
                     f"[bold]正在安装 {len(not_installed)} 个工具...[/bold]",
-                    border_style="green", box=box.ROUNDED,
+                    border_style="primary", box=box.ROUNDED,
                 ))
                 for i, tool in enumerate(not_installed, start=1):
-                    console.print(f"\n[bold cyan]({i}/{len(not_installed)})[/bold cyan] {tool.TITLE}")
+                    console.print(f"\n[accent]({i}/{len(not_installed)})[/accent] {tool.TITLE}")
                     try:
                         tool.install()
                     except Exception:

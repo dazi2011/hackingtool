@@ -68,7 +68,7 @@ tool_definitions = [
     ("SQL 注入工具",            "", "SQL 注入"),
     ("钓鱼攻击工具",             "", "钓鱼攻击"),
     ("Web 攻击工具",            "", "Web 攻击"),
-    ("后渗透工具",               "", "后渗透"),
+    ("渗透后利用工具",           "", "渗透后利用"),
     ("取证工具",                 "", "取证分析"),
     ("载荷生成工具",             "", "载荷生成"),
     ("利用框架",                 "", "利用框架"),
@@ -120,28 +120,28 @@ class AllTools(HackingToolsCollection):
 def show_help():
     console.print(Panel(
         Text.assemble(
-            ("  主菜单\n", "bold white"),
+            ("  主菜单\n", "bold"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1–20   ", "bold cyan"), ("进入某个分类\n", "white"),
-            ("  21     ", "bold cyan"), ("更新 / 卸载 Hackingtool\n", "white"),
-            ("  / 或 s ", "bold cyan"), ("按名称或关键词搜索工具\n", "white"),
-            ("  t      ", "bold cyan"), ("按标签筛选工具（osint、web、c2 等）\n", "white"),
-            ("  r      ", "bold cyan"), ("按任务推荐工具\n", "white"),
-            ("  ?      ", "bold cyan"), ("显示帮助\n", "white"),
-            ("  q      ", "bold cyan"), ("退出 Hackingtool\n\n", "white"),
-            ("  分类内\n", "bold white"),
+            ("  1–20   ", "accent"), ("进入某个分类\n", "text"),
+            ("  21     ", "accent"), ("更新 / 卸载 Hackingtool\n", "text"),
+            ("  / 或 s ", "accent"), ("按名称或关键词搜索工具\n", "text"),
+            ("  t      ", "accent"), ("按标签筛选工具（osint、web、c2 等）\n", "text"),
+            ("  r      ", "accent"), ("按任务推荐工具\n", "text"),
+            ("  ?      ", "accent"), ("显示帮助\n", "text"),
+            ("  q      ", "accent"), ("退出 Hackingtool\n\n", "text"),
+            ("  分类内\n", "bold"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1–N    ", "bold cyan"), ("选择工具\n", "white"),
-            ("  99     ", "bold cyan"), ("返回主菜单\n", "white"),
-            ("  98     ", "bold cyan"), ("打开项目主页（若可用）\n\n", "white"),
-            ("  工具页内\n", "bold white"),
+            ("  1–N    ", "accent"), ("选择工具\n", "text"),
+            ("  99     ", "accent"), ("返回主菜单\n", "text"),
+            ("  98     ", "accent"), ("打开项目主页（若可用）\n\n", "text"),
+            ("  工具页内\n", "bold"),
             ("  ─────────────────────────────────────\n", "dim"),
-            ("  1      ", "bold cyan"), ("安装工具\n", "white"),
-            ("  2      ", "bold cyan"), ("运行工具\n", "white"),
-            ("  99     ", "bold cyan"), ("返回分类\n", "white"),
+            ("  1      ", "accent"), ("安装工具\n", "text"),
+            ("  2      ", "accent"), ("运行工具\n", "text"),
+            ("  99     ", "accent"), ("返回分类\n", "text"),
         ),
-        title="[bold magenta] 帮助 [/bold magenta]",
-        border_style="magenta",
+        title="[primary] 帮助 [/primary]",
+        border_style="primary",
         box=box.ROUNDED,
         padding=(0, 2),
     ))
@@ -240,10 +240,10 @@ def _build_header() -> Panel:
 
     for art_line, (lbl_text, val_text) in zip(_BANNER_ART, stat_lines):
         grid.add_row(
-            Text(art_line, style="bold bright_green"),
-            Text("  │ ", style="dim green"),
-            Text(lbl_text, style="dim green"),
-            Text(val_text, style="bright_green"),
+            Text(art_line, style="primary"),
+            Text("  │ ", style="dim"),
+            Text(lbl_text, style="dim"),
+            Text(val_text, style="bold"),
         )
 
     # Quote + warning below the split row
@@ -252,17 +252,17 @@ def _build_header() -> Panel:
     body.add_column()
     body.add_row(grid)
     body.add_row(Text(""))
-    body.add_row(Text(f"  {quote}", style="italic dim"))
+    body.add_row(Text(f"  {quote}", style="italic"))
     body.add_row(Text("  仅限经授权的安全测试使用",
-                      style="bold dim red"))
+                      style="warning"))
 
     return Panel(
         body,
-        title=f"[bold bright_magenta][ HackingTool {VERSION_DISPLAY} ][/bold bright_magenta]",
+        title=f"[primary][ HackingTool {VERSION_DISPLAY} ][/primary]",
         title_align="left",
         subtitle=f"[dim][ {info['time']} ][/dim]",
         subtitle_align="right",
-        border_style="bright_magenta",
+        border_style="primary",
         box=box.HEAVY,
         padding=(0, 1),
     )
@@ -284,13 +284,13 @@ def build_menu():
     right = list(enumerate(categories[mid:],  start=mid + 1))
 
     grid = Table.grid(padding=(0, 1), expand=True)
-    grid.add_column("ln", justify="right", style="bold magenta", width=5)
+    grid.add_column("ln", justify="right", style="accent", width=5)
     grid.add_column("li", width=3)
-    grid.add_column("lt", style="magenta", ratio=1, no_wrap=True)
+    grid.add_column("lt", style="bold", ratio=1, no_wrap=True)
     grid.add_column("gap", width=3)
-    grid.add_column("rn", justify="right", style="bold magenta", width=5)
+    grid.add_column("rn", justify="right", style="accent", width=5)
     grid.add_column("ri", width=3)
-    grid.add_column("rt", style="magenta", ratio=1, no_wrap=True)
+    grid.add_column("rt", style="bold", ratio=1, no_wrap=True)
 
     for (li, (_, lic, ll)), r in zip_longest(left, right, fillvalue=None):
         if r:
@@ -301,8 +301,8 @@ def build_menu():
 
     console.print(Panel(
         grid,
-        title="[bold magenta] 选择分类 [/bold magenta]",
-        border_style="bright_magenta",
+        title="[primary] 选择分类 [/primary]",
+        border_style="primary",
         box=box.ROUNDED,
         padding=(0, 1),
     ))
@@ -310,18 +310,18 @@ def build_menu():
     # ── ToolManager row ──
     tm_num = len(categories) + 1
     console.print(
-        f"  [bold magenta]  {tm_num}[/bold magenta]  "
-        f"[magenta]{update_def[2]}[/magenta]"
+        f"  [accent]{tm_num}[/accent]  "
+        f"[bold]{update_def[2]}[/bold]"
     )
 
     # ── Claude-style dual-line prompt area ──
-    console.print(Rule(style="dim magenta"))
+    console.print(Rule(style="primary"))
     console.print(
-        "  [dim cyan]/[/dim cyan][dim]搜索[/dim]  "
-        "[dim cyan]t[/dim cyan] [dim]标签[/dim]  "
-        "[dim cyan]r[/dim cyan] [dim]推荐[/dim]  "
-        "[dim cyan]?[/dim cyan] [dim]帮助[/dim]  "
-        "[dim cyan]q[/dim cyan] [dim]退出[/dim]"
+        "  [accent]/[/accent] [dim]搜索[/dim]  "
+        "[accent]t[/accent] [dim]标签[/dim]  "
+        "[accent]r[/accent] [dim]推荐[/dim]  "
+        "[accent]?[/accent] [dim]帮助[/dim]  "
+        "[accent]q[/accent] [dim]退出[/dim]"
     )
 
 
@@ -396,12 +396,12 @@ def filter_by_tag():
 
     # Show tags in a compact grid
     console.print(Panel(
-        "  ".join(f"[bold cyan]{t}[/bold cyan]([dim]{len(tag_index[t])}[/dim])" for t in sorted_tags),
-        title="[bold magenta] 可用标签 [/bold magenta]",
-        border_style="magenta", box=box.ROUNDED, padding=(0, 2),
+        "  ".join(f"[accent]{t}[/accent]([dim]{len(tag_index[t])}[/dim])" for t in sorted_tags),
+        title="[primary] 可用标签 [/primary]",
+        border_style="primary", box=box.ROUNDED, padding=(0, 2),
     ))
 
-    tag = Prompt.ask("[bold cyan]输入标签[/bold cyan]", default="").strip().lower()
+    tag = Prompt.ask("[accent]输入标签[/accent]", default="").strip().lower()
     if not tag or tag not in tag_index:
         if tag:
             console.print(f"[dim]未找到标签 '{tag}'。[/dim]")
@@ -413,10 +413,10 @@ def filter_by_tag():
         title=f"标签为 '{tag}' 的工具",
         box=box.SIMPLE_HEAD, show_lines=True,
     )
-    table.add_column("编号", justify="center", style="bold cyan", width=5)
+    table.add_column("编号", justify="center", style="accent", width=5)
     table.add_column("状态", width=6)
-    table.add_column("工具", style="bold yellow", min_width=20)
-    table.add_column("分类", style="magenta", min_width=15)
+    table.add_column("工具", style="bold", min_width=20)
+    table.add_column("分类", style="primary", min_width=15)
 
     for i, (tool, cat) in enumerate(matches, start=1):
         status = "[green]已装[/green]" if tool.is_installed else "[dim]未装[/dim]"
@@ -425,7 +425,7 @@ def filter_by_tag():
     table.add_row("99", "", "返回主菜单", "")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+    raw = Prompt.ask("[accent]>[/accent]", default="").strip()
     if not raw or raw == "99":
         return
     try:
@@ -444,7 +444,7 @@ _RECOMMENDATIONS = {
     "破解密码":           ["bruteforce", "credentials"],
     "查找泄露密钥":       ["credentials"],
     "钓鱼演练":           ["social-engineering"],
-    "后渗透":             ["c2", "privesc"],
+    "渗透后利用":         ["c2", "privesc"],
     "网络横向移动":       ["network"],
     "渗透活动目录":       ["active-directory"],
     "渗透 Web 应用":     ["web", "scanner"],
@@ -469,8 +469,8 @@ def recommend_tools():
         title="你想做什么？",
         box=box.SIMPLE_HEAD,
     )
-    table.add_column("编号", justify="center", style="bold cyan", width=5)
-    table.add_column("任务", style="bold yellow")
+    table.add_column("编号", justify="center", style="accent", width=5)
+    table.add_column("任务", style="bold")
 
     tasks = list(_RECOMMENDATIONS.keys())
     for i, task in enumerate(tasks, start=1):
@@ -479,7 +479,7 @@ def recommend_tools():
     table.add_row("99", "返回主菜单")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+    raw = Prompt.ask("[accent]>[/accent]", default="").strip()
     if not raw or raw == "99":
         return
 
@@ -509,14 +509,14 @@ def recommend_tools():
 
         console.print(Panel(
             f"[bold]推荐工具：{task}[/bold]",
-            border_style="green", box=box.ROUNDED,
+            border_style="primary", box=box.ROUNDED,
         ))
 
         rtable = Table(box=box.SIMPLE_HEAD, show_lines=True)
-        rtable.add_column("编号", justify="center", style="bold cyan", width=5)
+        rtable.add_column("编号", justify="center", style="accent", width=5)
         rtable.add_column("状态", width=6)
-        rtable.add_column("工具", style="bold yellow", min_width=20)
-        rtable.add_column("分类", style="magenta")
+        rtable.add_column("工具", style="bold", min_width=20)
+        rtable.add_column("分类", style="primary")
 
         for i, (tool, cat) in enumerate(matches, start=1):
             status = "[green]已装[/green]" if tool.is_installed else "[dim]未装[/dim]"
@@ -525,7 +525,7 @@ def recommend_tools():
         rtable.add_row("99", "", "返回", "")
         console.print(rtable)
 
-        raw2 = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+        raw2 = Prompt.ask("[accent]>[/accent]", default="").strip()
         if raw2 and raw2 != "99":
             try:
                 ridx = int(raw2)
@@ -538,7 +538,7 @@ def recommend_tools():
 def search_tools(query: str | None = None):
     """Search tools — accepts inline query or prompts for one."""
     if query is None:
-        query = Prompt.ask("[bold cyan]/ 搜索[/bold cyan]", default="").strip().lower()
+        query = Prompt.ask("[accent]/ 搜索[/accent]", default="").strip().lower()
     else:
         query = query.lower()
     if not query:
@@ -567,10 +567,10 @@ def search_tools(query: str | None = None):
         title=f"搜索结果：'{query}'",
         box=box.SIMPLE_HEAD, show_lines=True,
     )
-    table.add_column("编号", justify="center", style="bold cyan", width=5)
-    table.add_column("工具", style="bold yellow", min_width=20)
-    table.add_column("分类", style="magenta", min_width=15)
-    table.add_column("说明", style="white", overflow="fold")
+    table.add_column("编号", justify="center", style="accent", width=5)
+    table.add_column("工具", style="bold", min_width=20)
+    table.add_column("分类", style="primary", min_width=15)
+    table.add_column("说明", style="text", overflow="fold")
 
     for i, (tool, cat) in enumerate(matches, start=1):
         desc = (tool.DESCRIPTION or "—").splitlines()[0]
@@ -579,7 +579,7 @@ def search_tools(query: str | None = None):
     table.add_row("99", "返回主菜单", "", "")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip().lower()
+    raw = Prompt.ask("[accent]>[/accent]", default="").strip().lower()
     if not raw or raw == "99":
         return
 
@@ -591,8 +591,8 @@ def search_tools(query: str | None = None):
     if 1 <= idx <= len(matches):
         tool, cat = matches[idx - 1]
         console.print(Panel(
-            f"[bold magenta]{tool.TITLE}[/bold magenta]  [dim]({cat})[/dim]",
-            border_style="magenta", box=box.ROUNDED,
+            f"[bold]{tool.TITLE}[/bold]  [dim]({cat})[/dim]",
+            border_style="primary", box=box.ROUNDED,
         ))
         tool.show_options()
 
@@ -604,7 +604,7 @@ def interact_menu():
         try:
             build_menu()
             raw = Prompt.ask(
-                "[bold magenta]╰─>[/bold magenta]", default=""
+                "[accent]╰─>[/accent]", default=""
             ).strip()
 
             if not raw:
@@ -636,8 +636,8 @@ def interact_menu():
 
             if raw_lower in ("q", "quit", "exit", "退出"):
                 console.print(Panel(
-                    "[bold white on magenta]  再见，注意安全  [/bold white on magenta]",
-                    box=box.HEAVY, border_style="magenta",
+                    "[bold]再见，注意安全[/bold]",
+                    box=box.HEAVY, border_style="primary",
                 ))
                 break
 
@@ -651,8 +651,8 @@ def interact_menu():
             if 1 <= choice <= len(all_tools):
                 title, _, _ = tool_definitions[choice - 1]
                 console.print(Panel(
-                    f"[bold magenta]{title}[/bold magenta]",
-                    border_style="magenta", box=box.ROUNDED,
+                    f"[bold]{title}[/bold]",
+                    border_style="primary", box=box.ROUNDED,
                 ))
                 try:
                     all_tools[choice - 1].show_options()

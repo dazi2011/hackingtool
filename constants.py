@@ -39,21 +39,22 @@ else:
     APP_BIN_PATH    = USER_CONFIG_DIR / "bin" / REPO_NAME
 
 # ── UI theme ──────────────────────────────────────────────────────────────────
-THEME_PRIMARY  = "bold magenta"
-THEME_BORDER   = "bright_magenta"
+THEME_PRIMARY  = "bold blue"
+THEME_BORDER   = "blue"
 THEME_SUCCESS  = "bold green"
 THEME_ERROR    = "bold red"
 THEME_WARNING  = "bold yellow"
-THEME_DIM      = "dim white"
-THEME_ARCHIVED = "dim yellow"
-THEME_URL      = "underline bright_blue"
-THEME_ACCENT   = "bold cyan"
+THEME_DIM      = "italic"
+THEME_ARCHIVED = "yellow"
+THEME_URL      = "underline blue"
+THEME_ACCENT   = "bold blue"
+THEME_TEXT     = "default"
 
 # ── Default config values ──────────────────────────────────────────────────────
 DEFAULT_CONFIG: dict = {
     "tools_dir":      str(USER_TOOLS_DIR),
     "version":        VERSION,
-    "theme":          "magenta",
+    "theme":          "blue",
     "show_archived":  False,
     "sudo_binary":    "sudo",
     "go_bin_dir":     str(Path.home() / "go" / "bin"),
