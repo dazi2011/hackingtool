@@ -108,13 +108,45 @@ class Venom(HackingTool):
 
 class Spycam(HackingTool):
     TITLE = "Spycam"
+    SUPPORTED_OS = ["linux"]
     DESCRIPTION = "Generates a Win32 payload that captures webcam images every 1 minute."
     INSTALL_COMMANDS = [
         "git clone https://github.com/indexnotfound404/spycam.git",
         "cd spycam && bash install.sh && chmod +x spycam",
     ]
-    RUN_COMMANDS = ["cd spycam && ./spycam"]
+    RUN_COMMANDS = ["cd spycam && bash spycam"]
     PROJECT_URL = "https://github.com/indexnotfound404/spycam"
+
+    @property
+    def is_installed(self) -> bool:
+        from config import get_tools_dir
+        return (get_tools_dir() / "spycam" / "spycam").exists()
+
+    def install(self):
+        from config import get_sudo_cmd, get_tools_dir
+
+        tools_dir = get_tools_dir()
+        repo_dir = tools_dir / "spycam"
+        if not repo_dir.exists():
+            subprocess.run(
+                ["git", "clone", self.PROJECT_URL + ".git", str(repo_dir)],
+                check=False,
+            )
+
+        subprocess.run(["chmod", "+x", "spycam"], cwd=str(repo_dir), check=False)
+        subprocess.run([get_sudo_cmd(), "bash", "install.sh"], cwd=str(repo_dir), check=False)
+        self.after_install()
+
+    def run(self):
+        from config import get_tools_dir
+
+        repo_dir = get_tools_dir() / "spycam"
+        if not repo_dir.exists():
+            console.print("[warning]未找到 Spycam 目录，请先安装。[/warning]")
+            return
+
+        subprocess.run(["chmod", "+x", "spycam"], cwd=str(repo_dir), check=False)
+        subprocess.run(["bash", "spycam"], cwd=str(repo_dir), check=False)
 
 
 class MobDroid(HackingTool):
