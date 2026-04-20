@@ -187,7 +187,7 @@ def _is_source_dir() -> bool:
 def prepare_install_dir():
     if APP_INSTALL_DIR.exists():
         console.print(f"[warning]{APP_INSTALL_DIR} 已存在。[/warning]")
-        if not Confirm.ask("Replace it? This removes the existing installation.", default=False):
+        if not Confirm.ask("是否替换？这会删除现有安装。", default=False):
             console.print("[error]安装已取消。[/error]")
             sys.exit(1)
         subprocess.run(["rm", "-rf", str(APP_INSTALL_DIR)], check=True)

@@ -4,9 +4,9 @@ import sys
 # ── Python version guard (must be before any other local import) ───────────────
 if sys.version_info < (3, 10):
     print(
-        f"[ERROR] Python 3.10 or newer is required.\n"
-        f"You are running Python {sys.version_info.major}.{sys.version_info.minor}.\n"
-        f"Upgrade with: sudo apt install python3.10"
+        f"[错误] 需要 Python 3.10 或更高版本。\n"
+        f"当前版本：Python {sys.version_info.major}.{sys.version_info.minor}。\n"
+        f"可使用以下命令升级：sudo apt install python3.10"
     )
     sys.exit(1)
 
