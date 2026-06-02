@@ -3,7 +3,7 @@
 # HackingTool — One-liner installer
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/Z4nzu/hackingtool/master/install.sh | sudo bash
+#   curl -sSL https://raw.githubusercontent.com/dazi2011/hackingtool/codex/zh-cn-localization/install.sh | sudo bash
 #
 # What it does:
 #   1. Checks prerequisites (Python 3.10+, git, pip, venv)
@@ -14,7 +14,8 @@
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
-REPO_URL="https://github.com/Z4nzu/hackingtool.git"
+REPO_URL="https://github.com/dazi2011/hackingtool.git"
+REPO_REF="codex/zh-cn-localization"
 INSTALL_DIR="/usr/share/hackingtool"
 BIN_PATH="/usr/bin/hackingtool"
 CONFIG_DIR="${SUDO_USER:+$(eval echo ~"$SUDO_USER")}/.hackingtool"
@@ -110,7 +111,7 @@ if [ -d "$INSTALL_DIR" ]; then
 fi
 
 info "Cloning repository..."
-git clone --depth 1 "$REPO_URL" "$INSTALL_DIR" 2>/dev/null
+git clone --depth 1 --branch "$REPO_REF" --single-branch "$REPO_URL" "$INSTALL_DIR" 2>/dev/null
 ok "Cloned to $INSTALL_DIR"
 
 # ── Python venv + requirements ────────────────────────────────────────────────
