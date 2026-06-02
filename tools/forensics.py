@@ -59,7 +59,7 @@ class BulkExtractor(HackingTool):
 
     def cli_mode(self):
         import subprocess
-        console.print(Panel(Text(self.TITLE + " - CLI Mode", justify="center"), style="bold magenta"))
+        console.print(Panel(Text(f"{self.TITLE} - 命令行模式", justify="center"), style="bold magenta"))
         subprocess.run(["sudo", "apt", "install", "-y", "bulk-extractor"])
         console.print("[magenta]bulk_extractor [options] imagefile[/]")
         subprocess.run(["bulk_extractor", "-h"])

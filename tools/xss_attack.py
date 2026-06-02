@@ -39,20 +39,20 @@ class XSSFinder(HackingTool):
 
     def after_install(self):
         console.print(Panel.fit(
-            "[bold cyan]Follow These Steps After Installation:[/bold cyan]\n"
-            "[red]*[/red] Go to [yellow]extended-xss-search[/yellow] directory\n"
-            "[green]*[/green] Rename [bold]example.app-settings.conf[/bold] → [bold]app-settings.conf[/bold]",
-            title="[ Install Notes ]",
+            "[bold cyan]安装完成后请执行以下步骤：[/bold cyan]\n"
+            "[red]*[/red] 进入 [yellow]extended-xss-search[/yellow] 目录\n"
+            "[green]*[/green] 将 [bold]example.app-settings.conf[/bold] 重命名为 [bold]app-settings.conf[/bold]",
+            title="[ 安装说明 ]",
             border_style="magenta"
         ))
         input("Press ENTER to continue")
 
     def run(self):
         console.print(Panel.fit(
-            "[bold cyan]You need to add links to scan[/bold cyan]\n"
-            "[red]*[/red] Go to [yellow]extended-xss-search/config/urls-to-test.txt[/yellow]\n"
-            "[green]*[/green] Run: [bold]python3 extended-xss-search.py[/bold]",
-            title="[ Run Instructions ]",
+            "[bold cyan]你需要先添加待扫描链接[/bold cyan]\n"
+            "[red]*[/red] 编辑 [yellow]extended-xss-search/config/urls-to-test.txt[/yellow]\n"
+            "[green]*[/green] 然后运行：[bold]python3 extended-xss-search.py[/bold]",
+            title="[ 运行说明 ]",
             border_style="blue"
         ))
 
@@ -86,7 +86,7 @@ class XSSCon(HackingTool):
 
     def run(self):
         console.print(Panel.fit(
-            "Enter target website to scan with XSSCon:",
+            "请输入要用 XSSCon 扫描的目标网站：",
             title="[bold yellow]XSSCon[/bold yellow]",
             border_style="bright_yellow"
         ))
@@ -153,7 +153,7 @@ class XSSAttackTools(HackingToolsCollection):
 
     def show_info(self):
         console.print(Panel.fit(
-            "[bold magenta]XSS Attack Tools Collection[/bold magenta]\n"
-            "A curated set of tools for XSS vulnerability analysis and exploitation.",
+            "[bold magenta]XSS 攻击工具合集[/bold magenta]\n"
+            "这里收录了一组用于 XSS 漏洞分析与利用的精选工具。",
             border_style="bright_magenta"
         ))

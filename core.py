@@ -17,14 +17,18 @@ from rich.traceback import install
 from constants import (
     THEME_PRIMARY, THEME_BORDER, THEME_ACCENT,
     THEME_SUCCESS, THEME_ERROR, THEME_WARNING,
-    THEME_DIM, THEME_ARCHIVED, THEME_URL,
+    THEME_DIM, THEME_ARCHIVED, THEME_URL, THEME_TEXT,
 )
+from localization import patch_console, patch_interaction, tr
 
 # Enable rich tracebacks globally
 install()
 
 _theme = Theme({
-    "purple":   "#7B61FF",
+    "primary":  THEME_PRIMARY,
+    "accent":   THEME_ACCENT,
+    "text":     THEME_TEXT,
+    "purple":   THEME_BORDER,
     "success":  THEME_SUCCESS,
     "error":    THEME_ERROR,
     "warning":  THEME_WARNING,
@@ -35,6 +39,8 @@ _theme = Theme({
 
 # Single shared console — all tool files do: from core import console
 console = Console(theme=_theme)
+patch_interaction()
+patch_console(console)
 
 
 def clear_screen():
@@ -58,22 +64,22 @@ def _show_inline_help():
     """Quick help available from any menu level."""
     console.print(Panel(
         Text.assemble(
-            ("  Navigation\n", "bold white"),
+            ("  导航说明\n", "bold"),
             ("  ─────────────────────────────────\n", "dim"),
-            ("  1–N    ", "bold cyan"), ("select item\n", "white"),
-            ("  97     ", "bold cyan"), ("install all (in category)\n", "white"),
-            ("\n  Tool menu: Install, Run, Update, Open Folder\n", "dim"),
-            ("  99     ", "bold cyan"), ("go back\n", "white"),
-            ("  98     ", "bold cyan"), ("open project page / archived\n", "white"),
-            ("  ?      ", "bold cyan"), ("show this help\n", "white"),
-            ("  q      ", "bold cyan"), ("quit hackingtool\n", "white"),
+            ("  1–N    ", "accent"), ("选择条目\n", "text"),
+            ("  97     ", "accent"), ("安装当前分类中的全部工具\n", "text"),
+            ("\n  工具菜单：安装 / 运行 / 更新 / 打开目录\n", "dim"),
+            ("  99     ", "accent"), ("返回上一级\n", "text"),
+            ("  98     ", "accent"), ("打开项目主页 / 查看已归档工具\n", "text"),
+            ("  ?      ", "accent"), ("显示帮助\n", "text"),
+            ("  q      ", "accent"), ("退出 Hackingtool\n", "text"),
         ),
-        title="[bold magenta] ? Quick Help [/bold magenta]",
-        border_style="magenta",
+        title="[primary] 帮助 [/primary]",
+        border_style="primary",
         box=box.ROUNDED,
         padding=(0, 2),
     ))
-    Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+    Prompt.ask("[dim]按回车返回[/dim]", default="")
 
 
 class HackingTool:
@@ -141,14 +147,14 @@ class HackingTool:
         return False
 
     def show_info(self):
-        desc = f"[cyan]{self.DESCRIPTION}[/cyan]"
+        desc = f"[text]{self.DESCRIPTION}[/text]"
         if self.PROJECT_URL:
-            desc += f"\n[url]🔗 {self.PROJECT_URL}[/url]"
+            desc += f"\n[url]项目主页：{self.PROJECT_URL}[/url]"
         if self.ARCHIVED:
-            desc += f"\n[archived]⚠ ARCHIVED: {self.ARCHIVED_REASON}[/archived]"
+            desc += f"\n[archived]已归档：{self.ARCHIVED_REASON}[/archived]"
         console.print(Panel(
             desc,
-            title=f"[{THEME_PRIMARY}]{self.TITLE}[/{THEME_PRIMARY}]",
+            title=f"[primary]{self.TITLE}[/primary]",
             border_style="purple",
             box=box.DOUBLE,
         ))
@@ -159,37 +165,37 @@ class HackingTool:
             clear_screen()
             self.show_info()
 
-            table = Table(title="Options", box=box.SIMPLE_HEAVY)
-            table.add_column("No.", style="bold cyan", justify="center")
-            table.add_column("Action", style="bold yellow")
+            table = Table(title="操作", box=box.SIMPLE_HEAVY)
+            table.add_column("编号", style="accent", justify="center")
+            table.add_column("动作", style="bold")
 
             for index, option in enumerate(self.OPTIONS):
-                table.add_row(str(index + 1), option[0])
+                table.add_row(str(index + 1), tr(option[0]))
 
             if self.PROJECT_URL:
-                table.add_row("98", "Open Project Page")
-            table.add_row("99", f"Back to {parent.TITLE if parent else 'Main Menu'}")
+                table.add_row("98", "打开项目主页")
+            table.add_row("99", f"返回到 {parent.TITLE if parent else '主菜单'}")
             console.print(table)
             console.print(
-                "  [dim cyan]?[/dim cyan][dim]help  "
-                "[/dim][dim cyan]q[/dim cyan][dim]uit  "
-                "[/dim][dim cyan]99[/dim cyan][dim] back[/dim]"
+                "  [accent]?[/accent] [dim]帮助[/dim]  "
+                "[accent]q[/accent] [dim]退出[/dim]  "
+                "[accent]99[/accent] [dim]返回[/dim]"
             )
 
-            raw = Prompt.ask("[bold cyan]╰─>[/bold cyan]", default="").strip().lower()
+            raw = Prompt.ask("[accent]╰─>[/accent]", default="").strip().lower()
             if not raw:
                 continue
-            if raw in ("?", "help"):
+            if raw in ("?", "help", "帮助"):
                 _show_inline_help()
                 continue
-            if raw in ("q", "quit", "exit"):
+            if raw in ("q", "quit", "exit", "退出"):
                 raise SystemExit(0)
 
             try:
                 choice = int(raw)
             except ValueError:
-                console.print("[error]⚠ Enter a number, ? for help, or q to quit.[/error]")
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                console.print("[error]请输入数字，或输入 ? 查看帮助、q 退出。[/error]")
+                Prompt.ask("[dim]按回车继续[/dim]", default="")
                 continue
 
             if choice == 99:
@@ -201,9 +207,9 @@ class HackingTool:
                     self.OPTIONS[choice - 1][1]()
                 except Exception:
                     console.print_exception(show_locals=True)
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                Prompt.ask("[dim]按回车继续[/dim]", default="")
             else:
-                console.print("[error]⚠ Invalid option.[/error]")
+                console.print("[error]无效选项。[/error]")
 
     def before_install(self): pass
 
@@ -211,12 +217,12 @@ class HackingTool:
         self.before_install()
         if isinstance(self.INSTALL_COMMANDS, (list, tuple)):
             for cmd in self.INSTALL_COMMANDS:
-                console.print(f"[warning]→ {cmd}[/warning]")
+                console.print(f"[warning]执行安装命令：{cmd}[/warning]")
                 os.system(cmd)
         self.after_install()
 
     def after_install(self):
-        console.print("[success]✔ Successfully installed![/success]")
+        console.print("[success]安装完成。[/success]")
 
     def before_uninstall(self) -> bool:
         return True
@@ -225,7 +231,7 @@ class HackingTool:
         if self.before_uninstall():
             if isinstance(self.UNINSTALL_COMMANDS, (list, tuple)):
                 for cmd in self.UNINSTALL_COMMANDS:
-                    console.print(f"[error]→ {cmd}[/error]")
+                    console.print(f"[error]执行卸载命令：{cmd}[/error]")
                     os.system(cmd)
         self.after_uninstall()
 
@@ -234,7 +240,7 @@ class HackingTool:
     def update(self):
         """Smart update — detects install method and runs the right update command."""
         if not self.is_installed:
-            console.print("[warning]Tool is not installed yet. Install it first.[/warning]")
+            console.print("[warning]该工具尚未安装，请先安装。[/warning]")
             return
 
         updated = False
@@ -246,30 +252,30 @@ class HackingTool:
                 if repo_urls:
                     dirname = repo_urls[0].rstrip("/").rsplit("/", 1)[-1].replace(".git", "")
                     if os.path.isdir(dirname):
-                        console.print(f"[cyan]→ git -C {dirname} pull[/cyan]")
+                        console.print(f"[accent]执行更新命令：git -C {dirname} pull[/accent]")
                         os.system(f"git -C {dirname} pull")
                         updated = True
             elif "pip install" in ic:
                 # Re-run pip install (--upgrade)
                 upgrade_cmd = ic.replace("pip install", "pip install --upgrade")
-                console.print(f"[cyan]→ {upgrade_cmd}[/cyan]")
+                console.print(f"[accent]执行更新命令：{upgrade_cmd}[/accent]")
                 os.system(upgrade_cmd)
                 updated = True
             elif "go install" in ic:
                 # Re-run go install (fetches latest)
-                console.print(f"[cyan]→ {ic}[/cyan]")
+                console.print(f"[accent]执行更新命令：{ic}[/accent]")
                 os.system(ic)
                 updated = True
             elif "gem install" in ic:
                 upgrade_cmd = ic.replace("gem install", "gem update")
-                console.print(f"[cyan]→ {upgrade_cmd}[/cyan]")
+                console.print(f"[accent]执行更新命令：{upgrade_cmd}[/accent]")
                 os.system(upgrade_cmd)
                 updated = True
 
         if updated:
-            console.print("[success]✔ Update complete![/success]")
+            console.print("[success]更新完成。[/success]")
         else:
-            console.print("[dim]No automatic update method available for this tool.[/dim]")
+            console.print("[dim]该工具暂不支持自动更新。[/dim]")
 
     def _get_tool_dir(self) -> str | None:
         """Find the tool's local directory — clone target, pip location, or binary path."""
@@ -311,14 +317,14 @@ class HackingTool:
         """Open the tool's directory in a new shell so the user can work manually."""
         tool_dir = self._get_tool_dir()
         if tool_dir:
-            console.print(f"[success]Opening folder: {tool_dir}[/success]")
-            console.print("[dim]Type 'exit' to return to hackingtool.[/dim]")
+            console.print(f"[success]正在打开目录：{tool_dir}[/success]")
+            console.print("[dim]输入 'exit' 可返回 Hackingtool。[/dim]")
             os.system(f'cd "{tool_dir}" && $SHELL')
         else:
-            console.print("[warning]Tool directory not found.[/warning]")
+            console.print("[warning]未找到工具目录。[/warning]")
             if self.PROJECT_URL:
-                console.print(f"[dim]You can clone it manually:[/dim]")
-                console.print(f"[cyan]  git clone {self.PROJECT_URL}.git[/cyan]")
+                console.print("[dim]你也可以手动克隆：[/dim]")
+                console.print(f"[accent]  git clone {self.PROJECT_URL}.git[/accent]")
 
     def before_run(self): pass
 
@@ -326,14 +332,14 @@ class HackingTool:
         self.before_run()
         if isinstance(self.RUN_COMMANDS, (list, tuple)):
             for cmd in self.RUN_COMMANDS:
-                console.print(f"[cyan]⚙ Running:[/cyan] [bold]{cmd}[/bold]")
+                console.print(f"[accent]正在执行：[/accent] [bold]{cmd}[/bold]")
                 os.system(cmd)
         self.after_run()
 
     def after_run(self): pass
 
     def show_project_page(self):
-        console.print(f"[url]🌐 Opening: {self.PROJECT_URL}[/url]")
+        console.print(f"[url]正在打开项目主页：{self.PROJECT_URL}[/url]")
         webbrowser.open_new_tab(self.PROJECT_URL)
 
 
@@ -346,9 +352,9 @@ class HackingToolsCollection:
         pass
 
     def show_info(self):
-        console.rule(f"[{THEME_PRIMARY}]{self.TITLE}[/{THEME_PRIMARY}]", style="purple")
+        console.rule(f"[primary]{self.TITLE}[/primary]", style="primary")
         if self.DESCRIPTION:
-            console.print(f"[italic cyan]{self.DESCRIPTION}[/italic cyan]\n")
+            console.print(f"[text]{self.DESCRIPTION}[/text]\n")
 
     def _active_tools(self) -> list:
         """Return tools that are not archived and are OS-compatible."""
@@ -374,27 +380,27 @@ class HackingToolsCollection:
         """Show archived tools sub-menu (option 98)."""
         archived = self._archived_tools()
         if not archived:
-            console.print("[dim]No archived tools in this category.[/dim]")
-            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            console.print("[dim]该分类下没有已归档工具。[/dim]")
+            Prompt.ask("[dim]按回车返回[/dim]", default="")
             return
 
         while True:
             clear_screen()
-            console.rule(f"[archived]Archived Tools — {self.TITLE}[/archived]", style="yellow")
+            console.rule(f"[archived]已归档工具 — {self.TITLE}[/archived]", style="yellow")
 
             table = Table(box=box.MINIMAL_DOUBLE_HEAD, show_lines=True)
-            table.add_column("No.", justify="center", style="bold yellow")
-            table.add_column("Tool", style="dim yellow")
-            table.add_column("Reason", style="dim white")
+            table.add_column("编号", justify="center", style="accent")
+            table.add_column("工具", style="archived")
+            table.add_column("原因", style="text")
 
             for i, tool in enumerate(archived):
-                reason = getattr(tool, "ARCHIVED_REASON", "No reason given")
+                reason = getattr(tool, "ARCHIVED_REASON", "未说明原因")
                 table.add_row(str(i + 1), tool.TITLE, reason)
 
-            table.add_row("99", "Back", "")
+            table.add_row("99", "返回", "")
             console.print(table)
 
-            raw = Prompt.ask("[bold yellow][?] Select[/bold yellow]", default="99")
+            raw = Prompt.ask("[accent][?] 选择[/accent]", default="99")
             try:
                 choice = int(raw)
             except ValueError:
@@ -415,68 +421,68 @@ class HackingToolsCollection:
             incompatible = self._incompatible_tools()
             archived = self._archived_tools()
 
-            table = Table(title="Available Tools", box=box.SIMPLE_HEAD, show_lines=True)
-            table.add_column("No.", justify="center", style="bold cyan", width=6)
-            table.add_column("", width=2)  # installed indicator
-            table.add_column("Tool", style="bold yellow", min_width=24)
-            table.add_column("Description", style="white", overflow="fold")
+            table = Table(title="可用工具", box=box.SIMPLE_HEAD, show_lines=True)
+            table.add_column("编号", justify="center", style="accent", width=6)
+            table.add_column("状态", width=6)
+            table.add_column("工具", style="bold", min_width=24)
+            table.add_column("说明", style="text", overflow="fold")
 
             for index, tool in enumerate(active, start=1):
                 desc = getattr(tool, "DESCRIPTION", "") or "—"
                 desc = desc.splitlines()[0] if desc != "—" else "—"
                 has_status = hasattr(tool, "is_installed")
-                status = ("[green]✔[/green]" if tool.is_installed else "[dim]✘[/dim]") if has_status else ""
+                status = ("[green]已装[/green]" if tool.is_installed else "[dim]未装[/dim]") if has_status else ""
                 table.add_row(str(index), status, tool.TITLE, desc)
 
             # Count not-installed tools for "Install All" label (skip sub-collections)
             not_installed = [t for t in active if hasattr(t, "is_installed") and not t.is_installed]
             if not_installed:
                 table.add_row(
-                    "[bold green]97[/bold green]", "",
-                    f"[bold green]Install all ({len(not_installed)} not installed)[/bold green]", "",
+                    "[success]97[/success]", "",
+                    f"[success]安装全部（{len(not_installed)} 个未安装）[/success]", "",
                 )
             if archived:
-                table.add_row("[dim]98[/dim]", "", f"[archived]Archived tools ({len(archived)})[/archived]", "")
+                table.add_row("[accent]98[/accent]", "", f"[archived]已归档工具（{len(archived)}）[/archived]", "")
             if incompatible:
-                console.print(f"[dim]({len(incompatible)} tools hidden — not supported on current OS)[/dim]")
+                console.print(f"[dim]（已隐藏 {len(incompatible)} 个当前操作系统不支持的工具）[/dim]")
 
-            table.add_row("99", "", f"Back to {parent.TITLE if parent else 'Main Menu'}", "")
+            table.add_row("99", "", f"返回到 {parent.TITLE if parent else '主菜单'}", "")
             console.print(table)
             console.print(
-                "  [dim cyan]?[/dim cyan][dim]help  "
-                "[/dim][dim cyan]q[/dim cyan][dim]uit  "
-                "[/dim][dim cyan]99[/dim cyan][dim] back[/dim]"
+                "  [accent]?[/accent] [dim]帮助[/dim]  "
+                "[accent]q[/accent] [dim]退出[/dim]  "
+                "[accent]99[/accent] [dim]返回[/dim]"
             )
 
-            raw = Prompt.ask("[bold cyan]╰─>[/bold cyan]", default="").strip().lower()
+            raw = Prompt.ask("[accent]╰─>[/accent]", default="").strip().lower()
             if not raw:
                 continue
-            if raw in ("?", "help"):
+            if raw in ("?", "help", "帮助"):
                 _show_inline_help()
                 continue
-            if raw in ("q", "quit", "exit"):
+            if raw in ("q", "quit", "exit", "退出"):
                 raise SystemExit(0)
 
             try:
                 choice = int(raw)
             except ValueError:
-                console.print("[error]⚠ Enter a number, ? for help, or q to quit.[/error]")
+                console.print("[error]请输入数字，或输入 ? 查看帮助、q 退出。[/error]")
                 continue
 
             if choice == 99:
                 return
             elif choice == 97 and not_installed:
                 console.print(Panel(
-                    f"[bold]Installing {len(not_installed)} tools...[/bold]",
-                    border_style="green", box=box.ROUNDED,
+                    f"[bold]正在安装 {len(not_installed)} 个工具...[/bold]",
+                    border_style="primary", box=box.ROUNDED,
                 ))
                 for i, tool in enumerate(not_installed, start=1):
-                    console.print(f"\n[bold cyan]({i}/{len(not_installed)})[/bold cyan] {tool.TITLE}")
+                    console.print(f"\n[accent]({i}/{len(not_installed)})[/accent] {tool.TITLE}")
                     try:
                         tool.install()
                     except Exception:
-                        console.print(f"[error]✘ Failed: {tool.TITLE}[/error]")
-                Prompt.ask("\n[dim]Press Enter to continue[/dim]", default="")
+                        console.print(f"[error]安装失败：{tool.TITLE}[/error]")
+                Prompt.ask("\n[dim]按回车继续[/dim]", default="")
             elif choice == 98 and archived:
                 self._show_archived_tools()
             elif 1 <= choice <= len(active):
@@ -484,6 +490,6 @@ class HackingToolsCollection:
                     active[choice - 1].show_options(parent=self)
                 except Exception:
                     console.print_exception(show_locals=True)
-                    Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                    Prompt.ask("[dim]按回车继续[/dim]", default="")
             else:
-                console.print("[error]⚠ Invalid option.[/error]")
+                console.print("[error]无效选项。[/error]")

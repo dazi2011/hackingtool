@@ -61,7 +61,7 @@ class Host2IP(HackingTool):
         console.print(Panel(Text(self.TITLE, justify="center"), style="bold magenta"))
         host = Prompt.ask("Enter host name (e.g. www.google.com):-  ")
         ips = socket.gethostbyname(host)
-        console.print("[bold magenta]{host} -> {ips}[/bold magenta]")
+        console.print(f"[bold magenta]{host} -> {ips}[/bold magenta]")
 
 
 class XeroSploit(HackingTool):
@@ -108,7 +108,7 @@ class IsItDown(HackingTool):
             [('Open', self.open)], installable=False, runnable=False)
 
     def open(self):
-        console.print(Panel("Opening isitdownrightnow.com", style="bold magenta"))
+        console.print(Panel("正在打开 isitdownrightnow.com", style="bold magenta"))
         webbrowser.open_new_tab("https://www.isitdownrightnow.com/")
 
 

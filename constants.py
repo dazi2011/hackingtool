@@ -3,10 +3,11 @@ import platform
 import shutil as _shutil
 
 # ── Repository ────────────────────────────────────────────────────────────────
-REPO_OWNER   = "Z4nzu"
+REPO_OWNER   = "dazi2011"
 REPO_NAME    = "hackingtool"
+REPO_REF     = "codex/zh-cn-localization"
 REPO_URL     = f"https://github.com/{REPO_OWNER}/{REPO_NAME}.git"
-REPO_WEB_URL = f"https://github.com/{REPO_OWNER}/{REPO_NAME}"
+REPO_WEB_URL = f"https://github.com/{REPO_OWNER}/{REPO_NAME}/tree/{REPO_REF}"
 
 # ── Versioning ────────────────────────────────────────────────────────────────
 VERSION         = "2.0.0"
@@ -39,21 +40,22 @@ else:
     APP_BIN_PATH    = USER_CONFIG_DIR / "bin" / REPO_NAME
 
 # ── UI theme ──────────────────────────────────────────────────────────────────
-THEME_PRIMARY  = "bold magenta"
-THEME_BORDER   = "bright_magenta"
+THEME_PRIMARY  = "bold blue"
+THEME_BORDER   = "blue"
 THEME_SUCCESS  = "bold green"
 THEME_ERROR    = "bold red"
 THEME_WARNING  = "bold yellow"
-THEME_DIM      = "dim white"
-THEME_ARCHIVED = "dim yellow"
-THEME_URL      = "underline bright_blue"
-THEME_ACCENT   = "bold cyan"
+THEME_DIM      = "italic"
+THEME_ARCHIVED = "yellow"
+THEME_URL      = "underline blue"
+THEME_ACCENT   = "bold blue"
+THEME_TEXT     = "default"
 
 # ── Default config values ──────────────────────────────────────────────────────
 DEFAULT_CONFIG: dict = {
     "tools_dir":      str(USER_TOOLS_DIR),
     "version":        VERSION,
-    "theme":          "magenta",
+    "theme":          "blue",
     "show_archived":  False,
     "sudo_binary":    "sudo",
     "go_bin_dir":     str(Path.home() / "go" / "bin"),
